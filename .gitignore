@@ -1,6 +1,6 @@
 
-/outputs/
-/inputs/
+/outputs/*
+/inputs/*
 
 ### Python template
 # Byte-compiled / optimized / DLL files
