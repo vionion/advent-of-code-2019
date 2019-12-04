@@ -26,6 +26,13 @@ def read_coma_separated_array(filename):
     return input_array
 
 
+def read_coma_separated_coordinates(filename):
+    file = open(join(INPUTS_FOLDER, filename), "r")
+    first_wire = file.readline().strip("\n").split(",")
+    second_wire = file.readline().split(",")
+    return first_wire, second_wire
+
+
 def day1_1():
     filename = "day1_1.txt"
     modules_masses = read_input_file(filename)
@@ -139,8 +146,127 @@ def _run_intcode_program(intcode_program, noun, verb):
     return answer
 
 
+def day3_1():
+    filename = "day3_1.txt"
+    first_wire, second_wire = read_coma_separated_coordinates(filename)
+    first_wire_coordinates = _paths_to_coordinates(first_wire)
+    second_wire_coordinates = _paths_to_coordinates(second_wire)
+    interception = _find_closest_interception(first_wire_coordinates, second_wire_coordinates)
+    output = _manhattan_distance(interception[0], interception[1])
+    write_to_output_file(filename, str(output))
+
+
+def day3_2():
+    filename = "day3_2.txt"
+    first_wire, second_wire = read_coma_separated_coordinates(filename)
+    first_wire_coordinates = _paths_to_coordinates(first_wire)
+    second_wire_coordinates = _paths_to_coordinates(second_wire)
+    interception = _find_closest_interception(first_wire_coordinates, second_wire_coordinates)
+    output = interception[2]
+    write_to_output_file(filename, str(output))
+
+
+def _manhattan_distance(x, y, x0=0, y0=0):
+    return abs(x - x0) + abs(y - y0)
+
+
+def _find_closest_interception(first_wire_coordinates, second_wire_coordinates):
+    # there are two subcases: first wire intercept second horizontally and vertically
+    first_wire_segments_vert = _filter_vertical_segments(first_wire_coordinates)
+    second_wire_segments_vert = _filter_vertical_segments(second_wire_coordinates)
+    first_wire_segments_horiz = _filter_horisontal_segments(first_wire_coordinates)
+    second_wire_segments_horiz = _filter_horisontal_segments(second_wire_coordinates)
+    # first_wire_segments_vert_sorted = sorted(first_wire_segments_vert, key=lambda x: x[0][0])
+    # 1st cross vertically
+    interceptions = _find_interceptions(first_wire_segments_vert, second_wire_segments_horiz)
+    # 1st cross horizontally
+    interceptions.extend(_find_interceptions(second_wire_segments_vert, first_wire_segments_horiz))
+    # interceptions_sorted = sorted(interceptions, key=lambda x: _manhattan_distance(x[0], x[1]))
+    interceptions_sorted = sorted(interceptions, key=lambda x: x[2])
+    closest_interception = interceptions_sorted[0]
+    if closest_interception == (0, 0, 0):
+    # if closest_interception == (0, 0):
+        closest_interception = interceptions_sorted[1]
+    return closest_interception
+
+
+def _find_interceptions(wire_segments_vert, wire_segments_horiz):
+    result = []
+    for segment_vert in wire_segments_vert:
+        for segment_horiz in wire_segments_horiz:
+            vert_x = segment_vert[0][0]
+            horiz_x1 = segment_horiz[0][0]
+            horiz_x2 = segment_horiz[1][0]
+
+            vert_y1 = segment_vert[0][1]
+            vert_y2 = segment_vert[1][1]
+            horiz_y = segment_horiz[0][1]
+            if min(horiz_x1, horiz_x2) <= vert_x <= max(horiz_x1, horiz_x2):
+                if min(vert_y1, vert_y2) <= horiz_y <= max(vert_y1, vert_y2):
+                    steps_required_a = segment_vert[2] + _manhattan_distance(vert_x, horiz_y, segment_vert[0][0], segment_vert[0][1])
+                    steps_required_b = segment_horiz[2] + _manhattan_distance(vert_x, horiz_y, segment_horiz[0][0], segment_horiz[0][1])
+                    result.append((vert_x, horiz_y, steps_required_a + steps_required_b))
+    return result
+
+
+def _filter_vertical_segments(wire_coordinates):
+    vertical_segments = []
+    last_point = wire_coordinates[-1]
+    steps_required = 0
+    for i in range(0, len(wire_coordinates)):
+        point = wire_coordinates[i]
+        # just the most clear check for non-last point I could came up with
+        if point is not last_point:
+            next_point = wire_coordinates[i + 1]
+            point_a_x = point[0]
+            point_b_x = next_point[0]
+            if point_a_x == point_b_x:
+                vertical_segments.append((point, next_point, steps_required))
+            steps_required += _manhattan_distance(next_point[0], next_point[1], point[0], point[1])
+    return vertical_segments
+
+
+def _filter_horisontal_segments(wire_coordinates):
+    horisontal_segments = []
+    last_point = wire_coordinates[-1]
+    steps_required = 0
+    for i in range(0, len(wire_coordinates)):
+        point = wire_coordinates[i]
+        # just the most clear check for non-last point I could came up with
+        if point is not last_point:
+            next_point = wire_coordinates[i + 1]
+            point_a_y = point[1]
+            point_b_y = next_point[1]
+            if point_a_y == point_b_y:
+                horisontal_segments.append((point, next_point, steps_required))
+            steps_required += _manhattan_distance(next_point[0], next_point[1], point[0], point[1])
+    return horisontal_segments
+
+
+def _paths_to_coordinates(paths):
+    zero_point = (0, 0)
+    coordinates = [zero_point]
+    previous_point = zero_point
+    for path in paths:
+        direction = path[0]
+        distance = int(path[1:])
+        if direction == "R":
+            next_point = (previous_point[0] + distance, previous_point[1])
+        elif direction == "U":
+            next_point = (previous_point[0], previous_point[1] + distance)
+        elif direction == "L":
+            next_point = (previous_point[0] - distance, previous_point[1])
+        elif direction == "D":
+            next_point = (previous_point[0], previous_point[1] - distance)
+        coordinates.append(next_point)
+        previous_point = next_point
+    return coordinates
+
+
 if __name__ == '__main__':
     day1_1()
     day1_2()
     day2_1()
     day2_2()
+    day3_1()
+    day3_2()
