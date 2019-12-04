@@ -185,7 +185,7 @@ def _find_closest_interception(first_wire_coordinates, second_wire_coordinates):
     interceptions_sorted = sorted(interceptions, key=lambda x: x[2])
     closest_interception = interceptions_sorted[0]
     if closest_interception == (0, 0, 0):
-    # if closest_interception == (0, 0):
+        # if closest_interception == (0, 0):
         closest_interception = interceptions_sorted[1]
     return closest_interception
 
@@ -203,8 +203,10 @@ def _find_interceptions(wire_segments_vert, wire_segments_horiz):
             horiz_y = segment_horiz[0][1]
             if min(horiz_x1, horiz_x2) <= vert_x <= max(horiz_x1, horiz_x2):
                 if min(vert_y1, vert_y2) <= horiz_y <= max(vert_y1, vert_y2):
-                    steps_required_a = segment_vert[2] + _manhattan_distance(vert_x, horiz_y, segment_vert[0][0], segment_vert[0][1])
-                    steps_required_b = segment_horiz[2] + _manhattan_distance(vert_x, horiz_y, segment_horiz[0][0], segment_horiz[0][1])
+                    steps_required_a = segment_vert[2] + _manhattan_distance(vert_x, horiz_y, segment_vert[0][0],
+                                                                             segment_vert[0][1])
+                    steps_required_b = segment_horiz[2] + _manhattan_distance(vert_x, horiz_y, segment_horiz[0][0],
+                                                                              segment_horiz[0][1])
                     result.append((vert_x, horiz_y, steps_required_a + steps_required_b))
     return result
 
@@ -263,6 +265,60 @@ def _paths_to_coordinates(paths):
     return coordinates
 
 
+def day4_1():
+    min_limit = 284639
+    max_limit = 748759
+    valid_passwords = 0
+    for password in range(min_limit, max_limit + 1):
+        digits = [int(d) for d in str(password)]
+        if _has_double(digits) and _dont_decrease(digits):
+            valid_passwords += 1
+    print(valid_passwords)
+
+
+def day4_2():
+    min_limit = 284639
+    max_limit = 748759
+    valid_passwords = 0
+    for password in range(min_limit, max_limit + 1):
+        digits = [int(d) for d in str(password)]
+        if _has_double_and_only_double(digits) and _dont_decrease(digits):
+            valid_passwords += 1
+    print(valid_passwords)
+
+
+def _has_double_and_only_double(digits):
+    previous_digit = digits[0]
+    group_size = 1
+    for digit in digits[1:]:
+        if previous_digit == digit:
+            group_size += 1
+        else:
+            if group_size == 2:
+                return True
+            group_size = 1
+        previous_digit = digit
+    return group_size == 2
+
+
+def _has_double(digits):
+    previous_digit = digits[0]
+    for digit in digits[1:]:
+        if previous_digit == digit:
+            return True
+        previous_digit = digit
+    return False
+
+
+def _dont_decrease(digits):
+    previous_digit = digits[0]
+    for digit in digits[1:]:
+        if previous_digit > digit:
+            return False
+        previous_digit = digit
+    return True
+
+
 if __name__ == '__main__':
     day1_1()
     day1_2()
@@ -270,3 +326,5 @@ if __name__ == '__main__':
     day2_2()
     day3_1()
     day3_2()
+    day4_1()
+    day4_2()
