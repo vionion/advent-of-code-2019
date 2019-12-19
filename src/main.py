@@ -319,12 +319,89 @@ def _dont_decrease(digits):
     return True
 
 
+def _run_diagnostic_intcode_program(intcode_program, input):
+    unchanged_input_data = copy(intcode_program)
+    input_iterator = iter(input)
+
+    index = 0
+    value = unchanged_input_data[index]
+    top_possible_index = len(unchanged_input_data) - 1
+    while value != 99 and index < len(unchanged_input_data):
+        # case when opcode is for sum
+        if value == 1:
+            index += 1
+            a_index = unchanged_input_data[index]
+            index += 1
+            b_index = unchanged_input_data[index]
+            index += 1
+            result_index = unchanged_input_data[index]
+            if a_index > top_possible_index or b_index > top_possible_index:
+                raise IndexError("instruction's parameter points to non-existing index")
+            else:
+                result = unchanged_input_data[a_index] + unchanged_input_data[b_index]
+            if result_index > top_possible_index:
+                raise IndexError("instruction's parameter points to non-existing index")
+            else:
+                unchanged_input_data[result_index] = result
+        # case when opcode is for multiplication
+        if value == 2:
+            index += 1
+            a_index = unchanged_input_data[index]
+            index += 1
+            b_index = unchanged_input_data[index]
+            index += 1
+            result_index = unchanged_input_data[index]
+            if a_index > top_possible_index or b_index > top_possible_index:
+                raise IndexError("instruction's parameter points to non-existing index")
+            else:
+                result = unchanged_input_data[a_index] * unchanged_input_data[b_index]
+            if result_index > top_possible_index:
+                raise IndexError("instruction's parameter points to non-existing index")
+            else:
+                unchanged_input_data[result_index] = result
+        # case when opcode is for entering input
+        if value == 3:
+            index += 1
+            index_for_input = unchanged_input_data[index]
+
+            if index_for_input > top_possible_index:
+                raise IndexError("instruction's parameter points to non-existing index")
+            else:
+                unchanged_input_data[index_for_input] = input_iterator
+                next(input_iterator)
+        # case when opcode is for output
+        if value == 4:
+            index += 1
+            index_for_output = unchanged_input_data[index]
+
+            if index_for_output > top_possible_index:
+                raise IndexError("instruction's parameter points to non-existing index")
+            else:
+                print(unchanged_input_data[index_for_output])
+        index += 1
+        value = unchanged_input_data[index]
+    return 0
+
+
+def day5_1():
+    filename = "day5_1.txt"
+    diagnostic_intcode_program = read_coma_separated_array(filename)
+
+    diagnostic_inputs = [1]
+    try:
+        output = _run_diagnostic_intcode_program(diagnostic_intcode_program, diagnostic_inputs)
+    except IndexError as e:
+        print(e)
+    write_to_output_file(filename, str(output))
+
+
 if __name__ == '__main__':
-    day1_1()
-    day1_2()
-    day2_1()
-    day2_2()
-    day3_1()
-    day3_2()
-    day4_1()
-    day4_2()
+    # day1_1()
+    # day1_2()
+    # day2_1()
+    # day2_2()
+    # day3_1()
+    # day3_2()
+    # day4_1()
+    # day4_2()
+    day5_1()
