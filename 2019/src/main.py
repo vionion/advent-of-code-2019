@@ -1,29 +1,9 @@
 import math
+import string
 from copy import copy
-from os.path import join
+from random import randint, sample
 
-INPUTS_FOLDER = "inputs"
-OUTPUTS_FOLDER = "outputs"
-
-
-def write_to_output_file(filename, output):
-    with open(join(OUTPUTS_FOLDER, filename), "w") as file:
-        file.write(output)
-
-
-def read_input_file(filename):
-    input_array = []
-    file = open(join(INPUTS_FOLDER, filename), "r")
-    for line in file:
-        input_array.append(int(line))
-    return input_array
-
-
-def read_coma_separated_array(filename):
-    file = open(join(INPUTS_FOLDER, filename), "r")
-    input_array = file.readline().split(",")
-    input_array = [int(x) for x in input_array]
-    return input_array
+from src.io_utils import output_to_file, read_coma_separated_array, read_input_file
 
 
 def day1_1():
@@ -32,7 +12,7 @@ def day1_1():
     fuel = 0
     for mass in modules_masses:
         fuel += _get_required_fuel_mass(mass)
-    write_to_output_file(filename, str(fuel))
+    output_to_file(filename, str(fuel))
 
 
 def _get_required_fuel_mass(mass):
@@ -50,7 +30,7 @@ def day1_2():
             module_fuel_mass += additional_fuel_mass
             additional_fuel_mass = _get_required_fuel_mass(additional_fuel_mass)
         fuel_mass += module_fuel_mass
-    write_to_output_file(filename, str(fuel_mass))
+    output_to_file(filename, str(fuel_mass))
 
 
 def day2_1():
@@ -64,7 +44,7 @@ def day2_1():
         output = _run_intcode_program(intcode_program, noun, verb)
     except IndexError as e:
         print(e)
-    write_to_output_file(filename, str(output))
+    output_to_file(filename, str(output))
 
 
 def day2_2():
@@ -88,7 +68,7 @@ def day2_2():
             break
     # 100 * noun + verb
     answer = 100 * noun + verb
-    write_to_output_file(filename, str(answer))
+    output_to_file(filename, str(answer))
 
 
 def _run_intcode_program(intcode_program, noun, verb):
@@ -138,9 +118,62 @@ def _run_intcode_program(intcode_program, noun, verb):
     answer = unchanged_input_data[0]
     return answer
 
+possible_symbols = list(string.ascii_uppercase) + list(string.digits)
+num_possible_symbols = len(possible_symbols)
+
+
+
+def get_random_string():
+    random_string = "".join(sample(possible_symbols, 4))
+    return random_string
+
+
+def send_code_request():
+    import requests
+    cookies = {"eduboxfi": "k5bqosbp0msd1fdtgdsuih8ju3"}
+
+    # l1 = "LTO1"
+    # l2 = "KU9Z"
+    # l3 = "WCEP"
+    while True:
+        l1 = get_random_string()
+        l2 = get_random_string()
+        l3 = get_random_string()
+        r = requests.post(f"https://oppilas.eautokoulu.fi/api/v1/auth/activate/?licencekey-1={l1}&licencekey-2={l2}&licencekey-3={l3}", cookies=cookies)
+        message = r.json()["message"]
+        if message != "Antamaasi lisenssiavainta ei tunnistettu":
+            print(message)
+            print(l1+"-"+l2+"-"+l3)
+            print(r.json())
+
+
+def get_sum(number):
+    last_digit = number%10
+    middle_digit = (number%100 - last_digit)/10
+    first_digit = (number - last_digit - middle_digit*10)/100
+    sum = last_digit+first_digit+middle_digit
+    # if sum > 9:
+    #     return get_sum(sum)
+    return sum
+
+
+
+def lucky_numbbers():
+    lucky_numbbers = 0
+    for first_half in range(1,1000):
+        for second_half in range(0, 1000):
+            first_half_sum = get_sum(first_half)
+            second_half_sum = get_sum(second_half)
+            if first_half_sum == second_half_sum:
+                print(first_half, second_half)
+                lucky_numbbers +=1
+
+    print(lucky_numbbers)
 
 if __name__ == '__main__':
-    day1_1()
-    day1_2()
-    day2_1()
-    day2_2()
+    # day1_1()
+    # day1_2()
+    # day2_1()
+    # day2_2()
+    # lucky_numbbers()
+    send_code_request()
