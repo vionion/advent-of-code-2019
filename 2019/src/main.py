@@ -174,22 +174,22 @@ def lucky_numbbers():
 
 def day3_1():
     filename = "day3_1.txt"
-    first_wire, second_wire = read_coma_separated_coordinates(filename)
+    first_wire, second_wire = read_coma_separated_array(filename)
     first_wire_coordinates = _paths_to_coordinates(first_wire)
     second_wire_coordinates = _paths_to_coordinates(second_wire)
     interception = _find_closest_interception(first_wire_coordinates, second_wire_coordinates)
     output = _manhattan_distance(interception[0], interception[1])
-    write_to_output_file(filename, str(output))
+    output_to_file(filename, str(output))
 
 
 def day3_2():
     filename = "day3_2.txt"
-    first_wire, second_wire = read_coma_separated_coordinates(filename)
+    first_wire, second_wire = read_coma_separated_array(filename)
     first_wire_coordinates = _paths_to_coordinates(first_wire)
     second_wire_coordinates = _paths_to_coordinates(second_wire)
     interception = _find_closest_interception(first_wire_coordinates, second_wire_coordinates)
     output = interception[2]
-    write_to_output_file(filename, str(output))
+    output_to_file(filename, str(output))
 
 
 def _manhattan_distance(x, y, x0=0, y0=0):
@@ -418,7 +418,7 @@ def day5_1():
         output = _run_diagnostic_intcode_program(diagnostic_intcode_program, diagnostic_inputs)
     except IndexError as e:
         print(e)
-    write_to_output_file(filename, str(output))
+    output_to_file(filename, str(output))
 
 
 if __name__ == '__main__':
