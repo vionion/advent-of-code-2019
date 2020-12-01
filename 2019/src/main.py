@@ -7,7 +7,7 @@ from src.io_utils import output_to_file, read_coma_separated_array, read_input_f
 
 
 def day1_1():
-    filename = "day1_1.txt"
+    filename = "day1.txt"
     modules_masses = read_input_file(filename)
     fuel = 0
     for mass in modules_masses:
