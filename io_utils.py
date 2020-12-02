@@ -9,11 +9,11 @@ def output_to_file(filename, output, base="2020"):
         file.write(output)
 
 
-def read_input_file(filename, base="2020"):
+def read_input_file(filename, base="2020", input_type=int):
     input_array = []
     file = open(join(base, INPUTS_FOLDER, filename), "r")
     for line in file:
-        input_array.append(int(line))
+        input_array.append(input_type(line))
     return input_array
 
 
