@@ -6,7 +6,7 @@ from io_utils import read_input_file
 def day6_1():
     input_list = read_input_file("day6.txt", input_type=str)
     answers = get_all_yes_answers_per_group(input_list)
-    amount_yes_answers=0
+    amount_yes_answers = 0
     for answers_per_group in answers:
         amount_yes_answers += len(answers_per_group)
     return amount_yes_answers
@@ -42,11 +42,10 @@ def get_common_yes_answers_per_group(input_list):
     return answers
 
 
-
 def day6_2():
     input_list = read_input_file("day6.txt", input_type=str)
     answers = get_common_yes_answers_per_group(input_list)
-    amount_yes_answers=0
+    amount_yes_answers = 0
     for answers_per_group in answers:
         amount_yes_answers += len(answers_per_group)
     return amount_yes_answers
