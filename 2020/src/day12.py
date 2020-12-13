@@ -94,4 +94,4 @@ def day12_2():
                                                                                                          waypoint_position_x,
                                                                                                          waypoint_position_y,
                                                                                                          instruction)
-    return int(abs(position_x) + abs(position_y))
+    return round(abs(position_x) + abs(position_y))
