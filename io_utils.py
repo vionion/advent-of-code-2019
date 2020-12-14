@@ -9,10 +9,12 @@ def output_to_file(filename, output, base="2020"):
         file.write(output)
 
 
-def read_input_file(filename, base="2020", input_type=int):
+def read_input_file(filename, base="2020", input_type=int, strip=False):
     input_array = []
     file = open(join(base, INPUTS_FOLDER, filename), "r")
     for line in file:
+        if strip:
+            line = line.strip()
         input_array.append(input_type(line))
     return input_array
 
