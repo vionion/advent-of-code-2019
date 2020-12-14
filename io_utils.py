@@ -24,9 +24,11 @@ def read_coma_separated_array(filename, base="2020"):
     return input_array
 
 
-def read_2d_array(filename, base="2020"):
+def read_2d_array(filename, base="2020", strip=False):
     file = open(join(base, INPUTS_FOLDER, filename), "r")
     input_array = []
     for line in file:
+        if strip:
+            line = line.strip()
         input_array.append([char for char in line])
     return input_array
