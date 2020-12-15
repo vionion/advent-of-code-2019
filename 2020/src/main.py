@@ -4,6 +4,7 @@ from day11 import day11_2, day11_1
 from day12 import day12_1, day12_2
 from day13 import day13_1, day13_2
 from day14 import day14_2, day14_1
+from day15 import day15_1, day15_2
 from day2 import day2_1, day2_2
 from day3 import day3_1, day3_2
 from day4 import day4_1, day4_2
@@ -40,5 +41,7 @@ if __name__ == '__main__':
     # print(day12_2())
     # print(day13_1())
     # print(day13_2())
-    print(day14_1())
-    print(day14_2())
+    # print(day14_1())
+    # print(day14_2())
+    print(day15_1())
+    print(day15_2())
